@@ -36,6 +36,10 @@ public class Lexer {
      */
     public Lexer(String input) {
         // Your code here
+        this.input = input;
+        this.tokens = new ArrayList<>();
+        this.position = 0;
+
     }
 
     /**
@@ -53,7 +57,26 @@ public class Lexer {
      * 4. If no pattern matches, throw RuntimeException for invalid input
      */
     public void tokenize() {
-        // Your code here
+        while (position < input.length()){
+            String remainingInput = input.substring(position);
+            boolean matched = false;
+
+            for (int i = 0; i< PATTERNS.length; i++){
+                Matcher matcher = PATTERNS[i].matcher(remainingInput);
+                if (matcher.lookingAt()){
+                    String match = matcher.group();
+                    if(!TYPES[i].equals("WHITESPACE")){
+                        tokens.add(new String[]{TYPES[i],match});
+                    }
+                    position += match.length();
+                    matched = true;
+                    break;
+                }
+            }
+            if(!matched){
+                throw new RuntimeException("Invalid token at position: " + position);
+            }
+        }
     }
 
     /**
@@ -66,12 +89,12 @@ public class Lexer {
      * @return List<String [ ]> The list of tokens
      */
     public List<String[]> getTokens() {
-        // Your code here
-        return null;
+    
+        return tokens;
     }
 
     public static void main(String[] args) {
-        String code = "int x = 10; if (x > 5) { x = x + 1; }";
+        String code = "if(x >5){}";
         Lexer lexer = new Lexer(code);
         lexer.tokenize();
         for (String[] token : lexer.getTokens()) {
